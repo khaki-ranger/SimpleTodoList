@@ -79,7 +79,33 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let userDefaults = UserDefaults.standard
         userDefaults.set(data, forKey: "todoList")
         userDefaults.synchronize()
-        
+    }
+    
+    // セルが編集可能であるかどうかを返却する
+    // 今回は全てのセルが削除対象なので、一律でtrueを返却する
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    // セルを削除した時の処理
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        // 削除処理かどうか
+        if editingStyle == UITableViewCellEditingStyle.delete {
+            // ToDoリストから削除
+            todoList.remove(at: indexPath.row)
+            
+            // セルを削除
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+            
+            // データを保存
+            // Data型にシリアライズする
+            let data: Data = NSKeyedArchiver.archivedData(withRootObject: todoList)
+            
+            // UserDefaultsに保存
+            let userDefaults = UserDefaults.standard
+            userDefaults.set(data, forKey: "todoList")
+            userDefaults.synchronize()
+        }
     }
 
     @IBAction func tapAddButton(_ sender: Any) {
